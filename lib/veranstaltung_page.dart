@@ -4,7 +4,7 @@ import 'bewohner_model.dart';
 import 'betreuer_model.dart';
 
 class VeranstaltungPage extends StatefulWidget {
-  const VeranstaltungPage({Key? key}) : super(key: key);
+  const VeranstaltungPage({super.key});
   @override
   _VeranstaltungPageState createState() => _VeranstaltungPageState();
 }

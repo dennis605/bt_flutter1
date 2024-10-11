@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'bewohner_page.dart';
 import 'betreuer_page.dart';
-import 'veranstaltung_page.dart';  // Importiere die Veranstaltungsseite
+import 'veranstaltung_page.dart';
+import 'tagesplan_page.dart'; // Importiere die Tagesplan-Seite
 
 void main() {
   runApp(MyApp());
@@ -47,7 +48,7 @@ class HomePage extends StatelessWidget {
               leading: Icon(Icons.person),
               title: Text('Bewohner verwalten'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Schließt den Drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => BewohnerPage()),
@@ -73,6 +74,17 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => VeranstaltungPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text('Tagespläne verwalten'), // Neuer Eintrag für Tagespläne
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TagesplanPage()), // Zur Tagesplan-Seite navigieren
                 );
               },
             ),

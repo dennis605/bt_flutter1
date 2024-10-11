@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'bewohner_model.dart'; // Importiere das Bewohnermodell
 
 class BewohnerPage extends StatefulWidget {
-  const BewohnerPage({super.key});
-
   @override
   _BewohnerPageState createState() => _BewohnerPageState();
 }
@@ -55,38 +53,38 @@ class _BewohnerPageState extends State<BewohnerPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Bewohner bearbeiten'),
+          title: Text('Bewohner bearbeiten'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
                 controller: vornameController,
-                decoration: const InputDecoration(labelText: 'Vorname'),
+                decoration: InputDecoration(labelText: 'Vorname'),
               ),
               TextField(
                 controller: nachnameController,
-                decoration: const InputDecoration(labelText: 'Nachname'),
+                decoration: InputDecoration(labelText: 'Nachname'),
               ),
               TextField(
                 controller: alterController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Alter'),
+                decoration: InputDecoration(labelText: 'Alter'),
               ),
               TextField(
                 controller: kommentarController,
-                decoration: const InputDecoration(labelText: 'Kommentar'),
+                decoration: InputDecoration(labelText: 'Kommentar'),
               ),
             ],
           ),
           actions: [
             TextButton(
-              child: const Text('Abbrechen'),
+              child: Text('Abbrechen'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: const Text('Speichern'),
+              child: Text('Speichern'),
               onPressed: () {
                 setState(() {
                   bewohnerListe[index] = Bewohner(
@@ -109,7 +107,7 @@ class _BewohnerPageState extends State<BewohnerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bewohner verwalten'),
+        title: Text('Bewohner verwalten'),
       ),
       body: Column(
         children: [
@@ -120,30 +118,30 @@ class _BewohnerPageState extends State<BewohnerPage> {
                 // Eingabefelder für Bewohner
                 TextField(
                   controller: vornameController,
-                  decoration: const InputDecoration(labelText: 'Vorname'),
+                  decoration: InputDecoration(labelText: 'Vorname'),
                 ),
                 TextField(
                   controller: nachnameController,
-                  decoration: const InputDecoration(labelText: 'Nachname'),
+                  decoration: InputDecoration(labelText: 'Nachname'),
                 ),
                 TextField(
                   controller: alterController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Alter'),
+                  decoration: InputDecoration(labelText: 'Alter'),
                 ),
                 TextField(
                   controller: kommentarController,
-                  decoration: const InputDecoration(labelText: 'Kommentar'),
+                  decoration: InputDecoration(labelText: 'Kommentar'),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _addBewohner,
-                  child: const Text('Bewohner hinzufügen'),
+                  child: Text('Bewohner hinzufügen'),
                 ),
               ],
             ),
           ),
-          const Divider(),
+          Divider(),
           // Liste der Bewohner anzeigen
           Expanded(
             child: ListView.builder(
@@ -157,13 +155,13 @@ class _BewohnerPageState extends State<BewohnerPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        icon: Icon(Icons.edit, color: Colors.blue),
                         onPressed: () {
                           _editBewohner(index);
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           _deleteBewohner(index);
                         },
