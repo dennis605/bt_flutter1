@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'betreuer_model.dart'; // Betreuermodell importieren
 
 class BetreuerPage extends StatefulWidget {
+  const BetreuerPage({super.key});
+
   @override
   _BetreuerPageState createState() => _BetreuerPageState();
 }
@@ -53,38 +55,38 @@ class _BetreuerPageState extends State<BetreuerPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Betreuer bearbeiten'),
+          title: const Text('Betreuer bearbeiten'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
                 controller: vornameController,
-                decoration: InputDecoration(labelText: 'Vorname'),
+                decoration: const InputDecoration(labelText: 'Vorname'),
               ),
               TextField(
                 controller: nachnameController,
-                decoration: InputDecoration(labelText: 'Nachname'),
+                decoration: const InputDecoration(labelText: 'Nachname'),
               ),
               TextField(
                 controller: alterController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Alter'),
+                decoration: const InputDecoration(labelText: 'Alter'),
               ),
               TextField(
                 controller: kommentarController,
-                decoration: InputDecoration(labelText: 'Kommentar'),
+                decoration: const InputDecoration(labelText: 'Kommentar'),
               ),
             ],
           ),
           actions: [
             TextButton(
-              child: Text('Abbrechen'),
+              child: const Text('Abbrechen'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: Text('Speichern'),
+              child: const Text('Speichern'),
               onPressed: () {
                 setState(() {
                   betreuerListe[index] = Betreuer(
@@ -107,7 +109,7 @@ class _BetreuerPageState extends State<BetreuerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Betreuer verwalten'),
+        title: const Text('Betreuer verwalten'),
       ),
       body: Column(
         children: [
@@ -118,30 +120,30 @@ class _BetreuerPageState extends State<BetreuerPage> {
                 // Eingabefelder für Betreuer
                 TextField(
                   controller: vornameController,
-                  decoration: InputDecoration(labelText: 'Vorname'),
+                  decoration: const InputDecoration(labelText: 'Vorname'),
                 ),
                 TextField(
                   controller: nachnameController,
-                  decoration: InputDecoration(labelText: 'Nachname'),
+                  decoration: const InputDecoration(labelText: 'Nachname'),
                 ),
                 TextField(
                   controller: alterController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Alter'),
+                  decoration: const InputDecoration(labelText: 'Alter'),
                 ),
                 TextField(
                   controller: kommentarController,
-                  decoration: InputDecoration(labelText: 'Kommentar'),
+                  decoration: const InputDecoration(labelText: 'Kommentar'),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _addBetreuer,
-                  child: Text('Betreuer hinzufügen'),
+                  child: const Text('Betreuer hinzufügen'),
                 ),
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
           // Liste der Betreuer anzeigen
           Expanded(
             child: ListView.builder(
@@ -155,13 +157,13 @@ class _BetreuerPageState extends State<BetreuerPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
+                        icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () {
                           _editBetreuer(index);
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           _deleteBetreuer(index);
                         },

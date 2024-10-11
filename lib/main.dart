@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'bewohner_page.dart';
-import 'betreuer_page.dart';  // Importiere die Betreuerseite
+import 'betreuer_page.dart';
+import 'veranstaltung_page.dart';  // Importiere die Veranstaltungsseite
 
 void main() {
   runApp(MyApp());
@@ -61,6 +62,17 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => BetreuerPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.event),
+              title: Text('Veranstaltungen verwalten'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => VeranstaltungPage()),
                 );
               },
             ),
