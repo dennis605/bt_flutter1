@@ -17,6 +17,7 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
   List<Bewohner> bewohnerDummyListe = [
     Bewohner(vorname: "Max", nachname: "Mustermann", alter: 30, kommentar: "Kommentar 1"),
     Bewohner(vorname: "Erika", nachname: "Mustermann", alter: 25, kommentar: "Kommentar 2"),
+    Bewohner(vorname: "Hans", nachname: "Meyer", alter: 35, kommentar: "Kommentar 3"),
   ];
 
   List<Betreuer> betreuerDummyListe = [
@@ -25,7 +26,7 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
   ];
 
   // Auswahl von Bewohnern und Betreuern
-  List<Bewohner> ausgewaehlteBewohner = []; // LowerCamelCase ohne Umlaute
+  Map<Bewohner, bool> bewohnerCheckboxValues = {}; // Für Checkboxen
   Betreuer? ausgewaehlterBetreuer; // LowerCamelCase ohne Umlaute
 
   // Controller für das Formular
@@ -38,8 +39,22 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
   TimeOfDay? anfangsZeit;
   TimeOfDay? endZeit;
 
+  @override
+  void initState() {
+    super.initState();
+    // Initialisiere die Bewohner Checkboxen mit "false" (nicht ausgewählt)
+    for (var bewohner in bewohnerDummyListe) {
+      bewohnerCheckboxValues[bewohner] = false;
+    }
+  }
+
   // Funktion zum Hinzufügen einer Veranstaltung
   void _addVeranstaltung() {
+    List<Bewohner> ausgewaehlteBewohner = bewohnerCheckboxValues.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
     if (ausgewaehlteBewohner.isEmpty || ausgewaehlterBetreuer == null || ausgewaehltesDatum == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Bitte alle Felder ausfuellen und Teilnehmer auswaehlen.'),
@@ -66,11 +81,15 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
     nameController.clear();
     ortController.clear();
     beschreibungController.clear();
-    ausgewaehlteBewohner = [];
     ausgewaehlterBetreuer = null;
     ausgewaehltesDatum = null;
     anfangsZeit = null;
     endZeit = null;
+
+    // Checkboxen zurücksetzen
+    for (var bewohner in bewohnerCheckboxValues.keys) {
+      bewohnerCheckboxValues[bewohner] = false;
+    }
   }
 
   // Datumsauswahl
@@ -138,34 +157,20 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
               ),
               const SizedBox(height: 20),
 
-              // Dropdown für Bewohnerauswahl
-              DropdownButtonFormField<Bewohner>(
-                decoration: const InputDecoration(labelText: 'Bewohner auswaehlen'),
-                items: bewohnerDummyListe.map((bewohner) {
-                  return DropdownMenuItem<Bewohner>(
-                    value: bewohner,
-                    child: Text('${bewohner.vorname} ${bewohner.nachname}'),
+              // Bewohner-Auswahl mit Checkboxen
+              const Text('Bewohner auswählen:'),
+              Column(
+                children: bewohnerCheckboxValues.entries.map((entry) {
+                  return CheckboxListTile(
+                    title: Text('${entry.key.vorname} ${entry.key.nachname}'),
+                    value: entry.value,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        bewohnerCheckboxValues[entry.key] = value!;
+                      });
+                    },
                   );
                 }).toList(),
-                onChanged: (bewohner) {
-                  if (bewohner != null && !ausgewaehlteBewohner.contains(bewohner)) {
-                    setState(() {
-                      ausgewaehlteBewohner.add(bewohner);
-                    });
-                  }
-                },
-              ),
-              Wrap(
-                children: ausgewaehlteBewohner
-                    .map((bewohner) => Chip(
-                          label: Text('${bewohner.vorname} ${bewohner.nachname}'),
-                          onDeleted: () {
-                            setState(() {
-                              ausgewaehlteBewohner.remove(bewohner);
-                            });
-                          },
-                        ))
-                    .toList(),
               ),
 
               // Dropdown für Betreuerauswahl
