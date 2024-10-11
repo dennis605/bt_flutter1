@@ -106,6 +106,179 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
     }
   }
 
+  // Veranstaltung bearbeiten
+  void _editVeranstaltung(int index) {
+    Veranstaltung veranstaltung = veranstaltungenListe[index];
+
+    // Lade die vorhandenen Daten in das Formular
+    nameController.text = veranstaltung.name;
+    ortController.text = veranstaltung.ort;
+    beschreibungController.text = veranstaltung.beschreibung;
+    ausgewaehlterBetreuer = veranstaltung.betreuer;
+    ausgewaehltesDatum = veranstaltung.datum;
+    anfangsZeit = TimeOfDay.fromDateTime(veranstaltung.anfang);
+    endZeit = TimeOfDay.fromDateTime(veranstaltung.ende);
+
+    // Markiere die Teilnehmer im Checkbox-Formular
+    for (var bewohner in bewohnerCheckboxValues.keys) {
+      bewohnerCheckboxValues[bewohner] = veranstaltung.teilnehmendeBewohner.contains(bewohner);
+    }
+
+    // Öffne den Dialog zum Bearbeiten
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Veranstaltung bearbeiten'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Veranstaltungsname *',
+                    hintText: 'Geben Sie den Namen der Veranstaltung ein',
+                  ),
+                ),
+                TextField(
+                  controller: ortController,
+                  decoration: const InputDecoration(
+                    labelText: 'Ort *',
+                    hintText: 'Geben Sie den Veranstaltungsort ein',
+                  ),
+                ),
+                TextField(
+                  controller: beschreibungController,
+                  decoration: const InputDecoration(
+                    labelText: 'Beschreibung',
+                    hintText: 'Geben Sie eine optionale Beschreibung ein',
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Bewohnerauswahl in Checkboxen anzeigen
+                const Text('Bewohner auswählen *:'),
+                Column(
+                  children: bewohnerCheckboxValues.entries.map((entry) {
+                    return CheckboxListTile(
+                      title: Text('${entry.key.vorname} ${entry.key.nachname}'),
+                      value: entry.value,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          bewohnerCheckboxValues[entry.key] = value!;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+
+                // Dropdown für Betreuer-Auswahl
+                DropdownButtonFormField<Betreuer>(
+                  decoration: const InputDecoration(
+                    labelText: 'Betreuer auswählen *',
+                    hintText: 'Wählen Sie einen Betreuer aus',
+                  ),
+                  items: betreuerDummyListe.map((betreuer) {
+                    return DropdownMenuItem<Betreuer>(
+                      value: betreuer,
+                      child: Text('${betreuer.vorname} ${betreuer.nachname}'),
+                    );
+                  }).toList(),
+                  onChanged: (betreuer) {
+                    setState(() {
+                      ausgewaehlterBetreuer = betreuer;
+                    });
+                  },
+                  value: ausgewaehlterBetreuer,
+                ),
+
+                // Datumsauswahl
+                ListTile(
+                  title: Text(
+                    ausgewaehltesDatum == null ? 'Datum auswählen *' : 'Datum: ${ausgewaehltesDatum!.toLocal()}',
+                  ),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: () => _pickDate(context),
+                ),
+
+                // Zeit-Auswahl für Anfang und Ende
+                ListTile(
+                  title: Text(
+                    anfangsZeit == null ? 'Anfangszeit auswählen *' : 'Anfang: ${anfangsZeit!.format(context)}',
+                  ),
+                  trailing: const Icon(Icons.access_time),
+                  onTap: () => _pickTime(context, true),
+                ),
+                ListTile(
+                  title: Text(
+                    endZeit == null ? 'Endzeit auswählen *' : 'Ende: ${endZeit!.format(context)}',
+                  ),
+                  trailing: const Icon(Icons.access_time),
+                  onTap: () => _pickTime(context, false),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _saveEditedVeranstaltung(index);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Speichern'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Speichert die bearbeitete Veranstaltung
+  void _saveEditedVeranstaltung(int index) {
+    List<Bewohner> ausgewaehlteBewohner = bewohnerCheckboxValues.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
+    if (ausgewaehlteBewohner.isEmpty || ausgewaehlterBetreuer == null || ausgewaehltesDatum == null || anfangsZeit == null || endZeit == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Bitte alle Felder ausfüllen und Teilnehmer auswählen.'),
+      ));
+      return;
+    }
+
+    setState(() {
+      veranstaltungenListe[index] = Veranstaltung(
+        name: nameController.text,
+        teilnehmendeBewohner: ausgewaehlteBewohner,
+        betreuer: ausgewaehlterBetreuer!,
+        datum: ausgewaehltesDatum!,
+        anfang: DateTime(
+          ausgewaehltesDatum!.year,
+          ausgewaehltesDatum!.month,
+          ausgewaehltesDatum!.day,
+          anfangsZeit!.hour,
+          anfangsZeit!.minute,
+        ),
+        ende: DateTime(
+          ausgewaehltesDatum!.year,
+          ausgewaehltesDatum!.month,
+          ausgewaehltesDatum!.day,
+          endZeit!.hour,
+          endZeit!.minute,
+        ),
+        ort: ortController.text,
+        beschreibung: beschreibungController.text,
+      );
+    });
+
+    _resetForm();
+  }
+
   // Datumsauswahl
   Future<void> _pickDate(BuildContext context) async {
     final selectedDate = await showDatePicker(
@@ -144,6 +317,13 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
     }
   }
 
+  // Veranstaltung löschen
+  void _deleteVeranstaltung(int index) {
+    setState(() {
+      veranstaltungenListe.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +335,7 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              // Veranstaltungsname
+              // Eingabefelder für die Veranstaltung
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
@@ -163,8 +343,6 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
                   hintText: 'Geben Sie den Namen der Veranstaltung ein',
                 ),
               ),
-              const SizedBox(height: 8),
-              // Ort
               TextField(
                 controller: ortController,
                 decoration: const InputDecoration(
@@ -172,8 +350,6 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
                   hintText: 'Geben Sie den Veranstaltungsort ein',
                 ),
               ),
-              const SizedBox(height: 8),
-              // Beschreibung
               TextField(
                 controller: beschreibungController,
                 decoration: const InputDecoration(
@@ -183,7 +359,7 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
               ),
               const SizedBox(height: 20),
 
-              // Bewohner-Auswahl
+              // Bewohner-Auswahl mit Checkboxen
               const Text('Bewohner auswählen *:'),
               Column(
                 children: bewohnerCheckboxValues.entries.map((entry) {
@@ -265,13 +441,18 @@ class _VeranstaltungPageState extends State<VeranstaltungPage> {
                     subtitle: Text(
                       'Ort: ${veranstaltung.ort}\nBetreuer: ${veranstaltung.betreuer.vorname} ${veranstaltung.betreuer.nachname}',
                     ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        setState(() {
-                          veranstaltungenListe.removeAt(index);
-                        });
-                      },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () => _editVeranstaltung(index),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteVeranstaltung(index),
+                        ),
+                      ],
                     ),
                   );
                 },
